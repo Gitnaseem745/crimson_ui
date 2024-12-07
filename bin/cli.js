@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-const { Command } = require('commander');
-const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch'); // For downloading files from GitHub
+import { Command } from 'commander';
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
 
 const program = new Command();
 
 program
-  .name('your-lib-cli')
-  .description('CLI to selectively install components from Your Library')
+  .name('crimson-ui-cli')
+  .description('CLI to selectively install components from Crimson UI')
   .version('1.0.0');
 
 // Define the install command
@@ -17,8 +17,10 @@ program
   .command('install <component>')
   .description('Install a specific component into your project')
   .action(async (component) => {
-    const repoURL = 'https://raw.githubusercontent.com/Gitnaseem745/crimson_ui/main/components/';
-    const files = [`${component}.tsx`, `${component}.animations.js`];
+    // Construct the base URL for the components
+    const repoURL = `https://raw.githubusercontent.com/Gitnaseem745/crimson_ui/main/components/UI/`;
+    const componentPath = `${component}/${component}.tsx`;
+    const fileURL = `${repoURL}${componentPath}`;
 
     // Create the folder for components if it doesn't exist
     const componentDir = path.join(process.cwd(), 'components');
@@ -26,21 +28,18 @@ program
       fs.mkdirSync(componentDir);
     }
 
-    for (const file of files) {
-      const fileURL = `${repoURL}${file}`;
-      const filePath = path.join(componentDir, file);
+    const filePath = path.join(componentDir, `${component}.tsx`);
 
-      try {
-        console.log(`Fetching ${file}...`);
-        const response = await fetch(fileURL);
-        if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+    try {
+      console.log(`Fetching ${filePath} from ${fileURL}...`);
+      const response = await fetch(fileURL);
+      if (!response.ok) throw new Error(`Failed to fetch ${component}.tsx`);
 
-        const content = await response.text();
-        fs.writeFileSync(filePath, content, 'utf8');
-        console.log(`Installed ${file} in ${componentDir}`);
-      } catch (error) {
-        console.error(`Error installing ${file}: ${error.message}`);
-      }
+      const content = await response.text();
+      fs.writeFileSync(filePath, content, 'utf8');
+      console.log(`Installed ${component}.tsx in ${componentDir}`);
+    } catch (error) {
+      console.error(`Error installing ${component}.tsx: ${error.message}`);
     }
   });
 

@@ -1,5 +1,5 @@
 import { darkTheme } from "@/components/theme/theme";
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/Button/Button";
 
 export default function Home() {
   return (
